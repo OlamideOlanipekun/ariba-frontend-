@@ -20,10 +20,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geist.className} bg-gray-50 text-gray-900 antialiased`}>
-        {/* TODO (Task 3): WishlistProvider is imported above but NOT used here.
-            Wrap {children} inside <WishlistProvider> so that all pages
-            can access the wishlist context. */}
-        {children}
+        <WishlistProvider>
+          {children}
+        </WishlistProvider>
       </body>
     </html>
   );
