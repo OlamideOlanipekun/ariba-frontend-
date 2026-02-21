@@ -1,29 +1,30 @@
 'use client';
 
-import { useState } from 'react';
-
-// TODO (Task 1): Refactor this component so the search query is stored in the
-// URL as the `q` search parameter instead of local state.
-// Hints:
-//   - Import `useRouter`, `useSearchParams`, and `usePathname` from 'next/navigation'.
-//   - On input change, push a new URL with the updated `?q=` param.
-//   - Initialise the input value from `searchParams.get('q')` so it survives page reloads.
-//   - Pass an `onSearch` prop (or lift state) if the parent needs the value — or let
-//     the parent simply read it from the URL directly.
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 interface SearchBarProps {
     onSearch?: (query: string) => void;
 }
 
 export default function SearchBar({ onSearch }: SearchBarProps) {
-    // ← local state only; not synced with the URL
-    const [query, setQuery] = useState('');
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    const query = searchParams.get('q') ?? '';
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         const value = e.target.value;
-        setQuery(value);
+        const params = new URLSearchParams(searchParams.toString());
+
+        if (value) {
+            params.set('q', value);
+        } else {
+            params.delete('q');
+        }
+
+        router.replace(`${pathname}?${params.toString()}`);
         onSearch?.(value);
-        // TODO: also update `?q=` in the URL here
     }
 
     return (

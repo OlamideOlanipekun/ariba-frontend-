@@ -1,4 +1,5 @@
 import ActiveUsers from '@/components/ActiveUsers';
+import ProductCard from '@/components/ProductCard';
 import SearchBar from '@/components/SearchBar';
 
 // 10 mock products the candidate will work with throughout the assessment.
@@ -15,9 +16,6 @@ const PRODUCTS = [
   { id: '10', name: 'LED Desk Lamp', category: 'Office', price: 55 },
 ];
 
-// NOTE: This is a Server Component. For Task 1 you will need to read
-// `searchParams` (the prop Next.js passes to page components) to filter the
-// product list, and make SearchBar a Client Component that updates the URL.
 export default async function HomePage({
   searchParams,
 }: {
@@ -25,9 +23,12 @@ export default async function HomePage({
 }) {
   const { q } = await searchParams;
 
-  // TODO (Task 1): Uncomment and use `q` to filter the list once SearchBar
-  // writes the query to the URL.
-  const visibleProducts = PRODUCTS; // ← should be filtered by `q`
+  // Task 1: Filter products by the `q` search param (case-insensitive)
+  const visibleProducts = q
+    ? PRODUCTS.filter((p) =>
+      p.name.toLowerCase().includes(q.toLowerCase())
+    )
+    : PRODUCTS;
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
@@ -45,36 +46,13 @@ export default async function HomePage({
       {/* Product grid */}
       <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {visibleProducts.map((product) => (
-          <li
+          <ProductCard
             key={product.id}
-            className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 shadow-sm
-                       transition hover:shadow-md"
-          >
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="font-semibold">{product.name}</p>
-                <span className="mt-0.5 inline-block rounded-full bg-indigo-50 px-2 py-0.5 text-xs
-                                 font-medium text-indigo-600">
-                  {product.category}
-                </span>
-              </div>
-
-              {/* TODO (Task 3): Replace this static button with a working
-                  wishlist toggle. Call `toggleWishlist(product.id)` from
-                  the WishlistContext and turn the heart red when the product
-                  is in the wishlist. */}
-              <button
-                aria-label="Add to wishlist"
-                className="text-xl text-gray-300 transition hover:text-red-500"
-              >
-                ♡
-              </button>
-            </div>
-
-            <p className="mt-auto pt-2 text-lg font-bold text-gray-800">
-              ${product.price}
-            </p>
-          </li>
+            id={product.id}
+            name={product.name}
+            category={product.category}
+            price={product.price}
+          />
         ))}
       </ul>
     </main>
